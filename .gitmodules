@@ -1,3 +1,6 @@
 [submodule "parent"]
 	path = parent
 	url = git@github.com:heavenboards/backend-parent.git
+[submodule "src/submodule/transfer-contract"]
+	path = src/submodule/transfer-contract
+	url = git@github.com:heavenboards/transfer-contract.git
