@@ -1,5 +1,21 @@
 spring:
-  application:
-    name: user-service
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5434/user_service
+    username: user
+    password: password
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    generate-ddl: true
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+  liquibase:
+    change-log: classpath:/db/changelog.xml
+  docker:
+    compose:
+      enabled: true
+      file: classpath:/docker-compose.yml
 server:
-  port: 8080
+  port: 8093

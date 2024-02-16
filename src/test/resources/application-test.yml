@@ -1,6 +1,6 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5434/user_service
+    url: r2dbc:tc:postgresql:///user_service?TC_IMAGE_TAG=12
     username: user123
     password: pass123
   jpa:
@@ -10,5 +10,6 @@ spring:
     generate-ddl: true
     hibernate:
       ddl-auto: validate
+    show-sql: true
   liquibase:
     change-log: classpath:/db/changelog.xml
