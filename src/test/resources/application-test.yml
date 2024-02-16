@@ -1,8 +1,9 @@
 spring:
-  r2dbc:
-    url: r2dbc:tc:postgresql:///user_service?TC_IMAGE_TAG=12
+  datasource:
+    url: jdbc:tc:postgresql://localhost:5435/user_service
     username: user123
     password: pass123
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
   jpa:
     properties:
       hibernate:

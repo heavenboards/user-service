@@ -1,19 +1,19 @@
 package heavenboards.user.service.user;
 
-import org.springframework.data.r2dbc.repository.R2dbcRepository;
-import reactor.core.publisher.Mono;
+import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Реактивный репозиторий для пользователей.
+ * Репозиторий для пользователей.
  */
-public interface UserRepository extends R2dbcRepository<UserEntity, UUID> {
+public interface UserRepository extends JpaRepository<UserEntity, UUID> {
     /**
      * Поиск пользователя по username.
      *
      * @param username - username
      * @return найденный пользователь
      */
-    Mono<UserEntity> findByUsername(String username);
+    Optional<UserEntity> findByUsername(String username);
 }

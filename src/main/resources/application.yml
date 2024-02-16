@@ -19,3 +19,6 @@ spring:
       file: classpath:/docker-compose.yml
 server:
   port: 8093
+microservice:
+  user-api:
+    url: http://localhost:8093
