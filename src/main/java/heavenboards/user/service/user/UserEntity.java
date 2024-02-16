@@ -1,5 +1,6 @@
 package heavenboards.user.service.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -9,11 +10,16 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import lombok.experimental.Accessors;
+import org.hibernate.annotations.UuidGenerator;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import transfer.contract.domain.user.UserRole;
 
 import java.time.ZonedDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -25,12 +31,13 @@ import java.util.UUID;
 @Builder(toBuilder = true)
 @Accessors(chain = true)
 @Entity
-@Table(name = "user")
-public class UserEntity {
+@Table(name = "user_entity")
+public final class UserEntity implements UserDetails {
     /**
      * Идентификатор.
      */
     @Id
+    @UuidGenerator
     private UUID id;
 
     /**
@@ -60,9 +67,28 @@ public class UserEntity {
     private String lastName;
 
     /**
-     * Признак "Удален" (для soft-delete).
+     * Истекло ли время действия аккаунта.
      */
-    private boolean deleted;
+    @Builder.Default
+    private boolean accountNonExpired = true;
+
+    /**
+     * Заблокирован ли аккаунт.
+     */
+    @Builder.Default
+    private boolean accountNonLocked = true;
+
+    /**
+     * Истекло ли время жизни credentials.
+     */
+    @Builder.Default
+    private boolean credentialsNonExpired = true;
+
+    /**
+     * Активен ли аккаунт.
+     */
+    @Builder.Default
+    private boolean enabled = true;
 
     /**
      * Дата и время создания.
@@ -74,9 +100,9 @@ public class UserEntity {
      */
     private ZonedDateTime updatedAt;
 
-    @ToString.Include
-    @SuppressWarnings("unused")
-    private String maskPassword() {
-        return "********";
+    @Override
+    @JsonIgnore
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 }

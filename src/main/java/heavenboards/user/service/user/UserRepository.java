@@ -16,4 +16,12 @@ public interface UserRepository extends JpaRepository<UserEntity, UUID> {
      * @return найденный пользователь
      */
     Optional<UserEntity> findByUsername(String username);
+
+    /**
+     * Существует ли пользователь по username.
+     *
+     * @param username - username
+     * @return true, если существует, иначе false
+     */
+    boolean existsByUsername(String username);
 }
