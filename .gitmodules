@@ -1,9 +1,9 @@
 [submodule "parent"]
 	path = parent
-	url = git@github.com:heavenboards/backend-parent.git
+	url = https://github.com/heavenboards/backend-parent.git
 [submodule "src/submodule/transfer-contract"]
 	path = src/submodules/transfer-contract
-	url = git@github.com:heavenboards/transfer-contract.git
+	url = https://github.com/heavenboards/transfer-contract.git
 [submodule "src/submodule/security-service"]
 	path = src/submodules/security-service
-	url = git@github.com:heavenboards/security-service.git
+	url = https://github.com/heavenboards/security-service.git
