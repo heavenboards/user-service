@@ -28,13 +28,6 @@ jobs:
 
       - name: 👉🏼 Запускаем проверку Code Style
         run: ./mvnw checkstyle:check
-
-      - name: 👉🏼 Сохраняем зависимости для следующих job
-        uses: actions/upload-artifact@v2
-        with:
-          name: dependencies
-          path: ~/.m2/repository
-
   build:
     runs-on: ubuntu-latest
     needs: checkstyle
@@ -56,11 +49,28 @@ jobs:
       - name: 👉🏼 Делаем maven wrapper исполняемым
         run: chmod +x ./mvnw
 
-      - name: 👉🏼 Подтягиваем зависимости
-        uses: actions/download-artifact@v2
-        with:
-          name: dependencies
-          path: ~/.m2/repository
-
       - name: 👉🏼 Запускаем сборку без тестов
         run: ./mvnw clean package -DskipTests
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: 👉🏼 Переключаемся на файлы проекта
+        uses: actions/checkout@v3
+
+      - name: 👉🏼 Инициализируем гит сабмодули
+        run: |
+          git submodule update --init --remote --recursive
+          git submodule foreach 'git checkout ${GITHUB_REF##*/} && git pull || echo "In ${sm_path} branch ${GITHUB_REF##*/} not found"'
+
+      - name: 👉🏼 Настройка JDK
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: 👉🏼 Делаем maven wrapper исполняемым
+        run: chmod +x ./mvnw
+
+      - name: 👉🏼 Запускаем тесты
+        run: ./mvnw clean package
