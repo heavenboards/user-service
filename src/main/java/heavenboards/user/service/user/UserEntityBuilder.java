@@ -25,7 +25,7 @@ public class UserEntityBuilder {
      * @param request - данные из запроса на регистрацию
      * @return объект UserEntity с проставленными полями
      */
-    public UserEntity buildFromRequestData(RegistrationRequestTo request) {
+    public UserEntity buildFromRequestData(final RegistrationRequestTo request) {
         return UserEntity.builder()
             .username(request.getUsername())
             .password(passwordEncoder.encode(request.getPassword()))

@@ -4,6 +4,7 @@ import heavenboards.user.service.user.UserEntity;
 import heavenboards.user.service.user.UserEntityBuilder;
 import heavenboards.user.service.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -11,8 +12,8 @@ import security.service.jwt.JwtTokenGenerator;
 import transfer.contract.domain.authentication.AuthenticationRequestTo;
 import transfer.contract.domain.authentication.RegistrationRequestTo;
 import transfer.contract.domain.authentication.TokenResponseTo;
-
-import java.util.Optional;
+import transfer.contract.domain.error.ServerErrorCode;
+import transfer.contract.exception.ServerException;
 
 /**
  * Сервис для работы с аутентификацией / регистрацией пользователей.
@@ -44,18 +45,17 @@ public class AuthenticationService {
      * Зарегистрировать пользователя.
      *
      * @param request - данные для регистрации
-     * @return токен или пустота (при ошибке)
+     * @return токен
      */
-    public Optional<TokenResponseTo> register(RegistrationRequestTo request) {
+    public TokenResponseTo register(final RegistrationRequestTo request) {
         if (userRepository.existsByUsername(request.getUsername())) {
-            return Optional.empty();
+            throw ServerException.of(ServerErrorCode.USERNAME_ALREADY_EXIST,
+                HttpStatus.BAD_REQUEST);
         }
 
         UserEntity user = entityBuilder.buildFromRequestData(request);
         userRepository.save(user);
-        return Optional.of(TokenResponseTo.builder()
-            .token(tokenGenerator.generate(user))
-            .build());
+        return TokenResponseTo.of(tokenGenerator.generate(user));
     }
 
     /**
@@ -64,14 +64,20 @@ public class AuthenticationService {
      * @param request - данные для аутентификации
      * @return токен
      */
-    public Optional<TokenResponseTo> authenticate(AuthenticationRequestTo request) {
-        UsernamePasswordAuthenticationToken authenticationToken =
-            new UsernamePasswordAuthenticationToken(request.getUsername(),
-                request.getPassword());
-        authenticationManager.authenticate(authenticationToken);
-        return userRepository.findByUsername(request.getUsername())
-            .flatMap(user -> Optional.of(TokenResponseTo.builder()
-                .token(tokenGenerator.generate(user))
-                .build()));
+    public TokenResponseTo authenticate(final AuthenticationRequestTo request) {
+        try {
+            var authenticationToken = new UsernamePasswordAuthenticationToken(
+                request.getUsername(), request.getPassword()
+            );
+
+            authenticationManager.authenticate(authenticationToken);
+            return userRepository.findByUsername(request.getUsername())
+                .map(user -> TokenResponseTo.of(tokenGenerator.generate(user)))
+                .orElseThrow(() -> ServerException.of(ServerErrorCode.USERNAME_NOT_FOUND,
+                    HttpStatus.NOT_FOUND));
+        } catch (Exception ignored) {
+            throw ServerException.of(ServerErrorCode.INVALID_USERNAME_PASSWORD,
+                HttpStatus.FORBIDDEN);
+        }
     }
 }

@@ -22,7 +22,7 @@ public class UserService {
      * @param username - username
      * @return найденный пользователь или пустота
      */
-    public Optional<UserEntity> findUserById(String username) {
+    public Optional<UserEntity> findUserByUsername(final String username) {
         return userRepository.findByUsername(username);
     }
 }
