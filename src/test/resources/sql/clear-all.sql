@@ -1,3 +1,3 @@
 -- noinspection SqlWithoutWhereForFile
 
-TRUNCATE "user" CASCADE;
+TRUNCATE user_entity CASCADE;

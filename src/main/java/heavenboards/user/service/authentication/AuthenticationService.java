@@ -77,7 +77,7 @@ public class AuthenticationService {
                     HttpStatus.NOT_FOUND));
         } catch (Exception ignored) {
             throw ServerException.of(ServerErrorCode.INVALID_USERNAME_PASSWORD,
-                HttpStatus.FORBIDDEN);
+                HttpStatus.UNAUTHORIZED);
         }
     }
 }
