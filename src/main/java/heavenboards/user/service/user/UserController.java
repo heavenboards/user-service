@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import transfer.contract.domain.error.ServerErrorCode;
+import transfer.contract.domain.user.UserTo;
 import transfer.contract.exception.ServerException;
 
 @RestController
@@ -25,7 +26,7 @@ public class UserController {
      * @return найденный пользователь
      */
     @GetMapping("/{username}")
-    public UserEntity findUserByUsername(final @PathVariable String username) {
+    public UserTo findUserByUsername(final @PathVariable String username) {
         return userService.findUserByUsername(username)
             .orElseThrow(() -> ServerException.of(ServerErrorCode.USERNAME_NOT_FOUND,
                 HttpStatus.NOT_FOUND));

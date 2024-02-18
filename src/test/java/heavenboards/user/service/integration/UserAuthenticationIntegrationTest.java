@@ -1,5 +1,6 @@
 package heavenboards.user.service.integration;
 
+import heavenboards.user.service.user.UserMapper;
 import heavenboards.user.service.user.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -65,6 +66,12 @@ public class UserAuthenticationIntegrationTest {
     private UserRepository userRepository;
 
     /**
+     * Маппер для пользователей.
+     */
+    @Autowired
+    private UserMapper userMapper;
+
+    /**
      * Mock api-клиента для сервиса пользователей.
      */
     @MockBean
@@ -87,6 +94,7 @@ public class UserAuthenticationIntegrationTest {
     public void validAuthenticationTest() {
         Mockito.when(userApi.findUserByUsername("username"))
             .thenReturn(userRepository.findByUsername("username")
+                .map(userMapper::mapFromEntity)
                 .orElseThrow(() -> ServerException.of(ServerErrorCode.USERNAME_NOT_FOUND,
                     HttpStatus.NOT_FOUND)));
 
