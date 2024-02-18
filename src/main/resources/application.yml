@@ -1,6 +1,6 @@
 spring:
   datasource:
-    url: r2dbc:postgresql://localhost:5434/user_service
+    url: jdbc:postgresql://localhost:5434/user_service
     username: user
     password: password
     driver-class-name: org.postgresql.Driver
@@ -17,8 +17,14 @@ spring:
     compose:
       enabled: true
       file: classpath:/docker-compose.yml
+  web:
+    resources:
+      add-mappings: false
 server:
   port: 8093
+  error:
+    whitelabel:
+      enabled: false
 microservice:
   user-api:
     url: http://localhost:8093

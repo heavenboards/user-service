@@ -1,5 +1,6 @@
 package heavenboards.user.service.authentication;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +29,7 @@ public class AuthenticationController {
      * @return токен
      */
     @PostMapping("/register")
-    public TokenResponseTo register(final @RequestBody RegistrationRequestTo request) {
+    public TokenResponseTo register(final @Valid @RequestBody RegistrationRequestTo request) {
         return authenticationService.register(request);
     }
 
@@ -39,7 +40,7 @@ public class AuthenticationController {
      * @return токен
      */
     @PostMapping("/authenticate")
-    public TokenResponseTo authenticate(final @RequestBody AuthenticationRequestTo request) {
+    public TokenResponseTo authenticate(final @Valid @RequestBody AuthenticationRequestTo request) {
         return authenticationService.authenticate(request);
     }
 }
