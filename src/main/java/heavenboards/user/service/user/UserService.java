@@ -4,7 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import transfer.contract.domain.user.UserTo;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Сервис для пользователей.
@@ -31,5 +34,17 @@ public class UserService {
     public Optional<UserTo> findUserByUsername(final String username) {
         return userRepository.findByUsername(username)
             .map(userMapper::mapFromEntity);
+    }
+
+    /**
+     * Найти всех пользователей по идентификаторам.
+     *
+     * @param ids - идентификаторы
+     * @return пользователи
+     */
+    public List<UserTo> findAllByIds(final Set<UUID> ids) {
+        return userRepository.findAllByIdIn(ids).stream()
+            .map(userMapper::mapFromEntity)
+            .toList();
     }
 }
