@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import transfer.contract.domain.authentication.AuthenticationOperationResultTo;
 import transfer.contract.domain.authentication.AuthenticationRequestTo;
 import transfer.contract.domain.authentication.RegistrationRequestTo;
-import transfer.contract.domain.authentication.TokenResponseTo;
 
 /**
  * Контроллер для регистрации и аутентификации.
@@ -26,10 +26,12 @@ public class AuthenticationController {
      * Запрос на регистрацию.
      *
      * @param request - данные для регистрации
-     * @return токен
+     * @return результат операции с токеном
      */
     @PostMapping("/register")
-    public TokenResponseTo register(final @Valid @RequestBody RegistrationRequestTo request) {
+    public AuthenticationOperationResultTo register(
+        final @Valid @RequestBody RegistrationRequestTo request
+    ) {
         return authenticationService.register(request);
     }
 
@@ -37,10 +39,12 @@ public class AuthenticationController {
      * Запрос на аутентификацию.
      *
      * @param request - данные для аутентификации
-     * @return токен
+     * @return результат операции с токеном
      */
     @PostMapping("/authenticate")
-    public TokenResponseTo authenticate(final @Valid @RequestBody AuthenticationRequestTo request) {
+    public AuthenticationOperationResultTo authenticate(
+        final @Valid @RequestBody AuthenticationRequestTo request
+    ) {
         return authenticationService.authenticate(request);
     }
 }

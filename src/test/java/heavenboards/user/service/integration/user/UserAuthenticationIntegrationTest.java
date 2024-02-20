@@ -1,4 +1,4 @@
-package heavenboards.user.service.integration;
+package heavenboards.user.service.integration.user;
 
 import heavenboards.user.service.user.UserMapper;
 import heavenboards.user.service.user.UserRepository;
@@ -21,11 +21,14 @@ import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import security.service.jwt.JwtTokenExtractor;
 import transfer.contract.api.UserApi;
+import transfer.contract.domain.authentication.AuthenticationOperationErrorCode;
+import transfer.contract.domain.authentication.AuthenticationOperationResultTo;
 import transfer.contract.domain.authentication.AuthenticationRequestTo;
-import transfer.contract.domain.authentication.TokenResponseTo;
-import transfer.contract.domain.error.ServerErrorCode;
-import transfer.contract.domain.error.ServerErrorTo;
-import transfer.contract.exception.ServerException;
+import transfer.contract.domain.common.OperationStatus;
+import transfer.contract.exception.BaseErrorCode;
+import transfer.contract.exception.ClientApplicationException;
+
+import java.util.List;
 
 /**
  * Интеграционные тесты для аутентификации пользователей.
@@ -95,21 +98,20 @@ public class UserAuthenticationIntegrationTest {
         Mockito.when(userApi.findUserByUsername("username"))
             .thenReturn(userRepository.findByUsername("username")
                 .map(userMapper::mapFromEntity)
-                .orElseThrow(() -> ServerException.of(ServerErrorCode.USERNAME_NOT_FOUND,
-                    HttpStatus.NOT_FOUND)));
+                .orElseThrow(() -> new ClientApplicationException(BaseErrorCode.NOT_FOUND,
+                    "Пользователь не найден")));
 
         String username = "username";
         Response response = authenticateUserAndGetResponse(username);
 
-        TokenResponseTo tokenResponse = response
+        AuthenticationOperationResultTo operationResult = response
             .getBody()
-            .as(TokenResponseTo.class);
+            .as(AuthenticationOperationResultTo.class);
 
         Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-        Assertions.assertNotNull(tokenResponse);
-        Assertions.assertNotNull(tokenResponse.getToken());
+        Assertions.assertEquals(OperationStatus.OK, operationResult.getStatus());
         Assertions.assertEquals(username, tokenExtractor
-            .extractUsername(tokenResponse.getToken()));
+            .extractUsername(operationResult.getToken()));
     }
 
     /**
@@ -121,15 +123,18 @@ public class UserAuthenticationIntegrationTest {
         String username = "username1";
         Response response = authenticateUserAndGetResponse(username);
 
-        ServerErrorTo serverErrorTo = response
+        AuthenticationOperationResultTo operationResult = response
             .getBody()
-            .as(ServerErrorTo.class);
+            .as(AuthenticationOperationResultTo.class);
 
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode());
-        Assertions.assertNotNull(serverErrorTo);
-        Assertions.assertNotNull(serverErrorTo.getErrorCode());
-        Assertions.assertEquals(ServerErrorCode.INVALID_USERNAME_PASSWORD, serverErrorTo
-            .getErrorCode());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OperationStatus.FAILED, operationResult.getStatus());
+        Assertions.assertEquals(List.of(
+            AuthenticationOperationResultTo.AuthenticationOperationErrorTo
+                .builder()
+                .errorCode(AuthenticationOperationErrorCode.USERNAME_NOT_FOUND)
+                .build()
+        ), operationResult.getErrors());
     }
 
     /**
@@ -141,15 +146,18 @@ public class UserAuthenticationIntegrationTest {
         String username = "username";
         Response response = authenticateUserAndGetResponse(username);
 
-        ServerErrorTo serverErrorTo = response
+        AuthenticationOperationResultTo operationResult = response
             .getBody()
-            .as(ServerErrorTo.class);
+            .as(AuthenticationOperationResultTo.class);
 
-        Assertions.assertEquals(HttpStatus.UNAUTHORIZED.value(), response.getStatusCode());
-        Assertions.assertNotNull(serverErrorTo);
-        Assertions.assertNotNull(serverErrorTo.getErrorCode());
-        Assertions.assertEquals(ServerErrorCode.INVALID_USERNAME_PASSWORD, serverErrorTo
-            .getErrorCode());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OperationStatus.FAILED, operationResult.getStatus());
+        Assertions.assertEquals(List.of(
+            AuthenticationOperationResultTo.AuthenticationOperationErrorTo
+                .builder()
+                .errorCode(AuthenticationOperationErrorCode.INVALID_USERNAME_PASSWORD)
+                .build()
+        ), operationResult.getErrors());
     }
 
     /**

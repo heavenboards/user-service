@@ -1,4 +1,4 @@
-package heavenboards.user.service.integration;
+package heavenboards.user.service.integration.user;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -16,10 +16,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import security.service.jwt.JwtTokenExtractor;
+import transfer.contract.domain.authentication.AuthenticationOperationErrorCode;
+import transfer.contract.domain.authentication.AuthenticationOperationResultTo;
 import transfer.contract.domain.authentication.RegistrationRequestTo;
-import transfer.contract.domain.authentication.TokenResponseTo;
-import transfer.contract.domain.error.ServerErrorCode;
-import transfer.contract.domain.error.ServerErrorTo;
+import transfer.contract.domain.common.OperationStatus;
+
+import java.util.List;
 
 /**
  * Интеграционные тесты для регистрации пользователей.
@@ -64,15 +66,14 @@ public class UserRegistrationIntegrationTest {
         String username = "username";
         Response response = registerUserAndGetResponse(username);
 
-        TokenResponseTo tokenResponse = response
+        AuthenticationOperationResultTo operationResult = response
             .getBody()
-            .as(TokenResponseTo.class);
+            .as(AuthenticationOperationResultTo.class);
 
         Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-        Assertions.assertNotNull(tokenResponse);
-        Assertions.assertNotNull(tokenResponse.getToken());
+        Assertions.assertEquals(OperationStatus.OK, operationResult.getStatus());
         Assertions.assertEquals(username, tokenExtractor
-            .extractUsername(tokenResponse.getToken()));
+            .extractUsername(operationResult.getToken()));
     }
 
     /**
@@ -85,15 +86,18 @@ public class UserRegistrationIntegrationTest {
         registerUserAndGetResponse(username);
         Response response = registerUserAndGetResponse(username);
 
-        ServerErrorTo serverErrorTo = response
+        AuthenticationOperationResultTo operationResult = response
             .getBody()
-            .as(ServerErrorTo.class);
+            .as(AuthenticationOperationResultTo.class);
 
-        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
-        Assertions.assertNotNull(serverErrorTo);
-        Assertions.assertNotNull(serverErrorTo.getErrorCode());
-        Assertions.assertEquals(ServerErrorCode.USERNAME_ALREADY_EXIST, serverErrorTo
-            .getErrorCode());
+        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode());
+        Assertions.assertEquals(OperationStatus.FAILED, operationResult.getStatus());
+        Assertions.assertEquals(List.of(
+            AuthenticationOperationResultTo.AuthenticationOperationErrorTo
+                .builder()
+                .errorCode(AuthenticationOperationErrorCode.USERNAME_ALREADY_EXIST)
+                .build()
+        ), operationResult.getErrors());
     }
 
     /**
