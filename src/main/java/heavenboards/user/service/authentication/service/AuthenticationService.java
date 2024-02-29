@@ -1,8 +1,8 @@
-package heavenboards.user.service.authentication;
+package heavenboards.user.service.authentication.service;
 
-import heavenboards.user.service.user.UserEntity;
-import heavenboards.user.service.user.UserEntityBuilder;
-import heavenboards.user.service.user.UserRepository;
+import heavenboards.user.service.user.domain.UserEntity;
+import heavenboards.user.service.user.domain.UserEntityBuilder;
+import heavenboards.user.service.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

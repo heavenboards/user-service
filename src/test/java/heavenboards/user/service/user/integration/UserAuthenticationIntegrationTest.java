@@ -1,7 +1,7 @@
-package heavenboards.user.service.integration.user;
+package heavenboards.user.service.user.integration;
 
-import heavenboards.user.service.user.UserMapper;
-import heavenboards.user.service.user.UserRepository;
+import heavenboards.user.service.user.mapping.UserMapper;
+import heavenboards.user.service.user.domain.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import lombok.RequiredArgsConstructor;

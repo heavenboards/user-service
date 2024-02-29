@@ -4,5 +4,5 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
-    <include file="/db/scripts/v1_create_user_table.sql"/>
+    <include file="/db/migration/user/run-once/create_user_table.sql"/>
 </databaseChangeLog>

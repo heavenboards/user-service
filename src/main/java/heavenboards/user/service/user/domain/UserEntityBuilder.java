@@ -1,4 +1,4 @@
-package heavenboards.user.service.user;
+package heavenboards.user.service.user.domain;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;

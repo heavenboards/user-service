@@ -1,5 +1,6 @@
-package heavenboards.user.service.authentication;
+package heavenboards.user.service.authentication.controller;
 
+import heavenboards.user.service.authentication.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     /**
-     * Запрос на регистрацию.
+     * Запрос на регистрацию пользователя.
      *
      * @param request - данные для регистрации
      * @return результат операции с токеном

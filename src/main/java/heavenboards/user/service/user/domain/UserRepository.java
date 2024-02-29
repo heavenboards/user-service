@@ -1,4 +1,4 @@
-package heavenboards.user.service.user;
+package heavenboards.user.service.user.domain;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

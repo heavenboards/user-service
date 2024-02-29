@@ -1,5 +1,7 @@
-package heavenboards.user.service.user;
+package heavenboards.user.service.user.service;
 
+import heavenboards.user.service.user.mapping.UserMapper;
+import heavenboards.user.service.user.domain.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import transfer.contract.domain.user.UserTo;

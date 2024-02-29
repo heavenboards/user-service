@@ -1,4 +1,4 @@
-package heavenboards.user.service.user;
+package heavenboards.user.service.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;

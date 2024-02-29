@@ -1,4 +1,4 @@
-package heavenboards.user.service.integration.user;
+package heavenboards.user.service.user.integration;
 
 import io.restassured.RestAssured;
 import io.restassured.response.Response;

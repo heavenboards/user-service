@@ -1,5 +1,6 @@
-package heavenboards.user.service.user;
+package heavenboards.user.service.user.mapping;
 
+import heavenboards.user.service.user.domain.UserEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import transfer.contract.domain.user.UserTo;

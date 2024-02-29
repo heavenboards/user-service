@@ -1,5 +1,7 @@
 package heavenboards.user.service;
 
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -13,6 +15,13 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
     "transfer.contract"
 })
 @EnableFeignClients(basePackages = "transfer.contract")
+@OpenAPIDefinition(
+    info = @Info(
+        title = "user-service",
+        version = "1.0.0",
+        description = "Микросервис для взаимодействия с данными пользователей"
+    )
+)
 public class UserServiceApplication {
     /**
      * Главный метод для запуска сервиса.
