@@ -13,11 +13,11 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Сервис для пользователей.
+ * Use case поиска пользователей.
  */
 @Service
 @RequiredArgsConstructor
-public class UserService {
+public class UserFindUseCase {
     /**
      * Репозиторий для пользователей.
      */

@@ -1,6 +1,6 @@
 package heavenboards.user.service.user.controller;
 
-import heavenboards.user.service.user.service.UserService;
+import heavenboards.user.service.user.service.UserFindUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,9 +19,9 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserController {
     /**
-     * Сервис для пользователей.
+     * Use case поиска пользователей.
      */
-    private final UserService userService;
+    private final UserFindUseCase userFindUseCase;
 
     /**
      * Получение пользователя по username.
@@ -31,7 +31,7 @@ public class UserController {
      */
     @GetMapping("/{username}")
     public UserTo findUserByUsername(final @PathVariable String username) {
-        return userService.findUserByUsername(username);
+        return userFindUseCase.findUserByUsername(username);
     }
 
     /**
@@ -42,6 +42,6 @@ public class UserController {
      */
     @PostMapping
     public List<UserTo> findUsersByIds(final @RequestBody Set<UUID> ids) {
-        return userService.findUsersByIds(ids);
+        return userFindUseCase.findUsersByIds(ids);
     }
 }

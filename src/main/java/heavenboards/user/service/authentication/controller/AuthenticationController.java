@@ -1,6 +1,7 @@
 package heavenboards.user.service.authentication.controller;
 
-import heavenboards.user.service.authentication.service.AuthenticationService;
+import heavenboards.user.service.authentication.service.AuthenticationUseCase;
+import heavenboards.user.service.authentication.service.RegistrationUseCase;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,9 +20,14 @@ import transfer.contract.domain.authentication.RegistrationRequestTo;
 @RequiredArgsConstructor
 public class AuthenticationController {
     /**
-     * Сервис для работы с аутентификацией / регистрацией пользователей.
+     * Use case для аутентификации пользователей.
      */
-    private final AuthenticationService authenticationService;
+    private final AuthenticationUseCase authenticationUseCase;
+
+    /**
+     * Use case для регистрации пользователей.
+     */
+    private final RegistrationUseCase registrationUseCase;
 
     /**
      * Запрос на регистрацию пользователя.
@@ -33,7 +39,7 @@ public class AuthenticationController {
     public AuthenticationOperationResultTo register(
         final @Valid @RequestBody RegistrationRequestTo request
     ) {
-        return authenticationService.register(request);
+        return registrationUseCase.register(request);
     }
 
     /**
@@ -46,6 +52,6 @@ public class AuthenticationController {
     public AuthenticationOperationResultTo authenticate(
         final @Valid @RequestBody AuthenticationRequestTo request
     ) {
-        return authenticationService.authenticate(request);
+        return authenticationUseCase.authenticate(request);
     }
 }
