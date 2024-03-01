@@ -1,16 +1,12 @@
 package heavenboards.user.service.user.service;
 
-import heavenboards.user.service.user.mapping.UserMapper;
 import heavenboards.user.service.user.domain.UserRepository;
+import heavenboards.user.service.user.mapping.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import transfer.contract.domain.user.UserTo;
 import transfer.contract.exception.BaseErrorCode;
 import transfer.contract.exception.ClientApplicationException;
-
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * Use case поиска пользователей.
@@ -39,17 +35,5 @@ public class UserFindUseCase {
             .map(userMapper::mapFromEntity)
             .orElseThrow(() -> new ClientApplicationException(BaseErrorCode.NOT_FOUND,
                 String.format("Пользователь с username %s не найден", username)));
-    }
-
-    /**
-     * Найти всех пользователей по идентификаторам.
-     *
-     * @param ids - идентификаторы
-     * @return пользователи
-     */
-    public List<UserTo> findUsersByIds(final Set<UUID> ids) {
-        return userRepository.findAllByIdIn(ids).stream()
-            .map(userMapper::mapFromEntity)
-            .toList();
     }
 }
