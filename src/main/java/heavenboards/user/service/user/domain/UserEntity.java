@@ -55,7 +55,8 @@ public final class UserEntity implements UserDetails {
      * Роль.
      */
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    @Builder.Default
+    private UserRole role = UserRole.USER;
 
     /**
      * Имя.

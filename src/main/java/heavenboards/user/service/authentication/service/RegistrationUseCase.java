@@ -1,8 +1,8 @@
 package heavenboards.user.service.authentication.service;
 
 import heavenboards.user.service.user.domain.UserEntity;
-import heavenboards.user.service.user.domain.UserEntityBuilder;
 import heavenboards.user.service.user.domain.UserRepository;
+import heavenboards.user.service.user.mapping.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import security.service.jwt.JwtTokenGenerator;
@@ -20,14 +20,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RegistrationUseCase {
     /**
-     * Обертка для создания объектов UserEntity.
-     */
-    private final UserEntityBuilder entityBuilder;
-
-    /**
      * Репозиторий для пользователей.
      */
     private final UserRepository userRepository;
+
+    /**
+     * Маппер для пользователей.
+     */
+    private final UserMapper userMapper;
 
     /**
      * Класс для генерации JWT-токенов.
@@ -51,7 +51,7 @@ public class RegistrationUseCase {
                 .build();
         }
 
-        UserEntity user = entityBuilder.buildFromRequestData(request);
+        UserEntity user = userMapper.mapFromRegistrationRequest(request);
         userRepository.save(user);
         return AuthenticationOperationResultTo.builder()
             .userId(user.getId())
