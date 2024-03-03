@@ -123,18 +123,12 @@ public class UserAuthenticationIntegrationTest {
         String username = "username1";
         Response response = authenticateUserAndGetResponse(username);
 
-        AuthenticationOperationResultTo operationResult = response
+        ClientApplicationException operationResult = response
             .getBody()
-            .as(AuthenticationOperationResultTo.class);
+            .as(ClientApplicationException.class);
 
-        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-        Assertions.assertEquals(OperationStatus.FAILED, operationResult.getStatus());
-        Assertions.assertEquals(List.of(
-            AuthenticationOperationResultTo.AuthenticationOperationErrorTo
-                .builder()
-                .errorCode(AuthenticationOperationErrorCode.USERNAME_NOT_FOUND)
-                .build()
-        ), operationResult.getErrors());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
+        Assertions.assertEquals(BaseErrorCode.NOT_FOUND, operationResult.getErrorCode());
     }
 
     /**
