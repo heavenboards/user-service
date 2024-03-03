@@ -37,8 +37,15 @@ public class InvitationEntity {
      * Пользователь, которого приглашают в проект.
      */
     @ManyToOne
-    @JoinColumn(name = "user_id", referencedColumnName = "id")
-    private UserEntity user;
+    @JoinColumn(name = "invited_user_id", referencedColumnName = "id")
+    private UserEntity invitedUser;
+
+    /**
+     * Пользователь, который отправил приглашение в проект.
+     */
+    @ManyToOne
+    @JoinColumn(name = "invitation_sender", referencedColumnName = "id")
+    private UserEntity invitationSender;
 
     /**
      * Идентификатор проекта, в который приглашается пользователь.

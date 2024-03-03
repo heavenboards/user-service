@@ -32,6 +32,14 @@ public abstract class UserMapper {
     public abstract UserTo mapFromEntity(UserEntity entity);
 
     /**
+     * Маппинг из to в entity.
+     *
+     * @param to - to-модель пользователя
+     * @return сущность с проставленными полями
+     */
+    public abstract UserEntity mapFromTo(UserTo to);
+
+    /**
      * Преобразование из запроса на регистрацию в entity.
      *
      * @param to - запрос на регистрацию пользователя

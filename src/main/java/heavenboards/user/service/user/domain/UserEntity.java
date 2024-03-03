@@ -64,11 +64,18 @@ public final class UserEntity implements UserDetails {
     private UserRole role = UserRole.USER;
 
     /**
-     * Открытые приглашения в проекты.
+     * Приглашения, которые пришли этому пользователю.
      */
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "invitedUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @Builder.Default
     private List<InvitationEntity> invitations = new ArrayList<>();
+
+    /**
+     * Приглашения, которые отправил этот пользователь.
+     */
+    @OneToMany(mappedBy = "invitationSender", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<InvitationEntity> sentInvitations = new ArrayList<>();
 
     /**
      * Имя.
