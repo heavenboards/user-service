@@ -4,6 +4,7 @@ import heavenboards.user.service.user.domain.UserRepository;
 import heavenboards.user.service.user.mapping.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import transfer.contract.domain.user.UserTo;
 import transfer.contract.exception.BaseErrorCode;
 import transfer.contract.exception.ClientApplicationException;
@@ -30,6 +31,7 @@ public class UserFindUseCase {
      * @param username - username
      * @return найденный пользователь или пустота
      */
+    @Transactional(readOnly = true)
     public UserTo findUserByUsername(final String username) {
         return userRepository.findByUsername(username)
             .map(userMapper::mapFromEntity)

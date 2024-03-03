@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import security.service.jwt.JwtTokenGenerator;
 import transfer.contract.domain.authentication.AuthenticationOperationErrorCode;
 import transfer.contract.domain.authentication.AuthenticationOperationResultTo;
@@ -40,6 +41,7 @@ public class AuthenticationUseCase {
      * @param request - данные для аутентификации
      * @return результат операции с токеном
      */
+    @Transactional(readOnly = true)
     public AuthenticationOperationResultTo authenticate(final AuthenticationRequestTo request) {
         try {
             if (!userRepository.existsByUsername(request.getUsername())) {
