@@ -5,6 +5,7 @@ import heavenboards.user.service.user.domain.UserRepository;
 import heavenboards.user.service.user.mapping.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import security.service.jwt.JwtTokenGenerator;
 import transfer.contract.domain.authentication.AuthenticationOperationErrorCode;
 import transfer.contract.domain.authentication.AuthenticationOperationResultTo;
@@ -40,6 +41,7 @@ public class RegistrationUseCase {
      * @param request - данные для регистрации
      * @return результат операции с токеном
      */
+    @Transactional
     public AuthenticationOperationResultTo register(final RegistrationRequestTo request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             return AuthenticationOperationResultTo.builder()
