@@ -53,7 +53,7 @@ public class InvitationCreateUseCase {
         checkProjectExist(invitation.getProject().getId());
         Optional<InvitationEntity> invitationEntity = invitationRepository
             .findByProjectIdAndInvitedUserId(invitation.getProject().getId(),
-                invitation.getUser().getId());
+                invitation.getInvitedUser().getId());
 
         if (invitationEntity.isPresent()) {
             return InvitationOperationResultTo.builder()

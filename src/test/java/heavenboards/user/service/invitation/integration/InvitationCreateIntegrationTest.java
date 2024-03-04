@@ -4,7 +4,6 @@ import feign.FeignException;
 import heavenboards.user.service.invitation.domain.InvitationEntity;
 import heavenboards.user.service.invitation.domain.InvitationRepository;
 import heavenboards.user.service.user.domain.UserEntity;
-import heavenboards.user.service.user.domain.UserRepository;
 import heavenboards.user.service.user.mapping.UserMapper;
 import io.restassured.RestAssured;
 import io.restassured.http.Header;
@@ -19,11 +18,9 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpHeaders;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import security.service.util.test.SecurityTestUtil;
@@ -45,8 +42,6 @@ import java.util.UUID;
 /**
  * Интеграционные тесты для создания приглашений.
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("test")
 @RequiredArgsConstructor
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @Sql(
@@ -61,7 +56,7 @@ import java.util.UUID;
     executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     config = @SqlConfig(encoding = "UTF-8")
 )
-public class InvitationCreateIntegrationTest {
+public class InvitationCreateIntegrationTest extends BaseInvitationIntegrationTest {
     /**
      * Utility-класс с настройкой security для тестов.
      */
@@ -73,12 +68,6 @@ public class InvitationCreateIntegrationTest {
      */
     @MockBean
     private UserApi userApi;
-
-    /**
-     * Репозиторий для пользователей.
-     */
-    @Autowired
-    private UserRepository userRepository;
 
     /**
      * Маппер для пользователей.
@@ -229,33 +218,21 @@ public class InvitationCreateIntegrationTest {
     /**
      * Отправить запрос на создание приглашения и получить ответ.
      *
-     * @param user    - to-модель пользователя, которого мы приглашаем в проект
-     * @param project - to-модель проекта, в который мы приглашаем пользователя
+     * @param invitedUser - to-модель пользователя, которого мы приглашаем в проект
+     * @param project     - to-модель проекта, в который мы приглашаем пользователя
      * @return ответ
      */
-    private Response createInvitationAndGetResponse(final UserTo user,
+    private Response createInvitationAndGetResponse(final UserTo invitedUser,
                                                     final ProjectTo project) {
         return RestAssured
             .given()
             .contentType("application/json")
             .header(new Header(HttpHeaders.AUTHORIZATION, securityTestUtil.authHeader()))
             .body(InvitationTo.builder()
-                .user(user)
+                .invitedUser(invitedUser)
                 .project(project)
                 .build())
             .when()
             .post("/invitation");
-    }
-
-    /**
-     * Получить сущность пользователя по username.
-     *
-     * @param username - username
-     * @return сущность пользователя или ClientApplicationException
-     */
-    private UserEntity findUserByUsername(final String username) {
-        return userRepository.findByUsername(username)
-            .orElseThrow(() -> new ClientApplicationException(BaseErrorCode.NOT_FOUND,
-                String.format("Пользователь с username %s не найден", username)));
     }
 }
