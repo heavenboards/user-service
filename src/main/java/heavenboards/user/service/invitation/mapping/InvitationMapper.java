@@ -40,6 +40,13 @@ public abstract class InvitationMapper {
      */
     private UserMapper userMapper;
 
+    /**
+     * Маппинг из entity в to.
+     *
+     * @param to     - to-модель приглашения, которой мы проставляем поля
+     * @param entity - сущность
+     * @return to с проставленными полями
+     */
     @Mapping(target = "invitedUser", ignore = true)
     @Mapping(target = "invitationSender", ignore = true)
     public abstract InvitationTo mapFromEntity(@MappingTarget InvitationTo to,
@@ -116,12 +123,12 @@ public abstract class InvitationMapper {
     }
 
     /**
-     * Внедрение бина api-клиента для сервиса проектов
+     * Внедрение бина api-клиента для сервиса проектов.
      *
      * @param api - бин ProjectApi
      */
     @Autowired
-    public void setProjectApi(ProjectApi api) {
+    public void setProjectApi(final ProjectApi api) {
         this.projectApi = api;
     }
 
@@ -131,7 +138,7 @@ public abstract class InvitationMapper {
      * @param mapper - бин UserMapper
      */
     @Autowired
-    public void setUserMapper(UserMapper mapper) {
+    public void setUserMapper(final UserMapper mapper) {
         this.userMapper = mapper;
     }
 }

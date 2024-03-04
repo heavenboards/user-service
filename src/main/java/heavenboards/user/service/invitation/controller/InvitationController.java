@@ -27,6 +27,9 @@ public class InvitationController {
      */
     private final InvitationCreateUseCase invitationCreateUseCase;
 
+    /**
+     * Use case поиска приглашений пользователя в проекты.
+     */
     private final InvitationFindUseCase invitationFindUseCase;
 
     /**
@@ -46,8 +49,8 @@ public class InvitationController {
      * @return все найденные приглашения
      */
     @GetMapping("/sent")
-    @Operation(summary = "Запрос на получение всех приглашений, " +
-        "которые присылал этот пользователь другим пользователям")
+    @Operation(summary = "Запрос на получение всех приглашений, "
+        + "которые присылал этот пользователь другим пользователям")
     public List<InvitationTo> findAllSentInvitations() {
         return invitationFindUseCase.findAllSentInvitations();
     }
