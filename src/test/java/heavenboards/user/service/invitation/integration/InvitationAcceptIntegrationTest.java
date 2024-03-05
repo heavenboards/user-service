@@ -21,18 +21,20 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import security.service.util.test.SecurityTestUtil;
+import transfer.contract.api.ProjectApi;
 import transfer.contract.api.UserApi;
 import transfer.contract.domain.common.OperationStatus;
 import transfer.contract.domain.invitation.InvitationOperationErrorCode;
 import transfer.contract.domain.invitation.InvitationOperationResultTo;
 import transfer.contract.domain.invitation.InvitationTo;
+import transfer.contract.domain.project.ProjectTo;
 import transfer.contract.domain.user.UserTo;
 
 import java.util.List;
 import java.util.UUID;
 
 /**
- * Интеграционные тесты отклонения приглашений.
+ * Интеграционные тесты подтверждения приглашений.
  */
 @RequiredArgsConstructor
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -48,7 +50,7 @@ import java.util.UUID;
     executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD,
     config = @SqlConfig(encoding = "UTF-8")
 )
-public class InvitationRejectIntegrationTest extends BaseInvitationIntegrationTest {
+public class InvitationAcceptIntegrationTest extends BaseInvitationIntegrationTest {
     /**
      * Utility-класс с настройкой security для тестов.
      */
@@ -60,6 +62,12 @@ public class InvitationRejectIntegrationTest extends BaseInvitationIntegrationTe
      */
     @MockBean
     private UserApi userApi;
+
+    /**
+     * Mock api-клиента для сервиса проектов.
+     */
+    @MockBean
+    private ProjectApi projectApi;
 
     /**
      * Маппер для пользователей.
@@ -84,28 +92,35 @@ public class InvitationRejectIntegrationTest extends BaseInvitationIntegrationTe
     }
 
     /**
-     * Тест валидного отклонения существующего приглашения.
+     * Тест валидного подтверждения существующего приглашения.
      */
     @Test
-    @DisplayName("Тест валидного отклонения существующего приглашения")
-    public void existingInvitationRejectTest() {
+    @DisplayName("Тест валидного подтверждения существующего приглашения")
+    public void validInvitationAcceptTest() {
         String invitedUserUsername = "invitedUser";
         UserEntity invitedUserEntity = findUserByUsername(invitedUserUsername);
         UserTo invitedUserTo = userMapper.mapFromEntity(invitedUserEntity);
         securityTestUtil.securityContextHelper(invitedUserTo);
 
+        ProjectTo project = ProjectTo.builder()
+            .id(UUID.fromString("bf9a55de-a3b4-4a7b-8435-8fdb73759cb7"))
+            .name("Existing project")
+            .build();
+
         Mockito.when(userApi.findUserByUsername(invitedUserUsername))
             .thenReturn(invitedUserTo);
+        Mockito.when(projectApi.findProjectById(project.getId()))
+            .thenReturn(project);
 
-        InvitationEntity rejectedInvitation =
+        InvitationEntity acceptedInvitation =
             findInvitationById(UUID.fromString("625c0921-e767-4269-a98c-d9ff571bbb8c"));
 
-        Response response = rejectInvitationAndGetResponse(rejectedInvitation.getId());
-        InvitationOperationResultTo operationResultTo = response.getBody()
+        Response response = acceptInvitationAndGetResponse(acceptedInvitation.getId(), project);
+        InvitationOperationResultTo operationResult = response.getBody()
             .as(InvitationOperationResultTo.class);
 
-        Assertions.assertEquals(OperationStatus.OK, operationResultTo.getStatus());
-        Assertions.assertEquals(rejectedInvitation.getId(), operationResultTo.getInvitationId());
+        Assertions.assertEquals(OperationStatus.OK, operationResult.getStatus());
+        Mockito.verify(projectApi, Mockito.times(1)).updateProject(project);
 
         invitedUserEntity = findUserByUsername(invitedUserUsername);
         Assertions.assertEquals(1, invitedUserEntity.getInvitations().size());
@@ -120,49 +135,58 @@ public class InvitationRejectIntegrationTest extends BaseInvitationIntegrationTe
     }
 
     /**
-     * Тест отклонения приглашения чужого пользователя.
+     * Тест подтверждения приглашения чужого пользователя.
      */
     @Test
-    @DisplayName("Тест отклонения приглашения чужого пользователя")
-    public void rejectAnotherUserInvitationTest() {
+    @DisplayName("Тест подтверждения приглашения чужого пользователя")
+    public void acceptAnotherUserInvitationTest() {
         String invitationSenderUsername = "invitationSender";
         UserEntity invitationSenderEntity = findUserByUsername(invitationSenderUsername);
         UserTo invitationSenderTo = userMapper.mapFromEntity(invitationSenderEntity);
         securityTestUtil.securityContextHelper(invitationSenderTo);
 
+        ProjectTo project = ProjectTo.builder()
+            .id(UUID.fromString("bf9a55de-a3b4-4a7b-8435-8fdb73759cb7"))
+            .name("Existing project")
+            .build();
+
         Mockito.when(userApi.findUserByUsername(invitationSenderUsername))
             .thenReturn(invitationSenderTo);
+        Mockito.when(projectApi.findProjectById(project.getId()))
+            .thenReturn(project);
 
-        InvitationEntity rejectedInvitation =
+        InvitationEntity acceptedInvitation =
             findInvitationById(UUID.fromString("625c0921-e767-4269-a98c-d9ff571bbb8c"));
 
-        Response response = rejectInvitationAndGetResponse(rejectedInvitation.getId());
+        Response response = acceptInvitationAndGetResponse(acceptedInvitation.getId(), project);
         InvitationOperationResultTo operationResult = response.getBody()
             .as(InvitationOperationResultTo.class);
 
         Assertions.assertEquals(OperationStatus.FAILED, operationResult.getStatus());
         Assertions.assertEquals(List.of(InvitationOperationResultTo.InvitationOperationErrorTo
             .builder()
-            .failedInvitationId(rejectedInvitation.getId())
+            .failedInvitationId(acceptedInvitation.getId())
             .errorCode(InvitationOperationErrorCode.THIS_IS_NOT_YOUR_INVITATION)
             .build()), operationResult.getErrors());
     }
 
     /**
-     * Отправить запрос на отклонение приглашения и получить ответ.
+     * Отправить запрос на подтверждение приглашения и получить ответ.
      *
-     * @param invitationId - идентификатор приглашения, которое отклоняет пользователь
+     * @param invitationId - идентификатор приглашения, которое подтверждает пользователь
+     * @param project      - проект, в который приглашается пользователь
      * @return ответ
      */
-    private Response rejectInvitationAndGetResponse(UUID invitationId) {
+    private Response acceptInvitationAndGetResponse(UUID invitationId, ProjectTo project) {
         return RestAssured
             .given()
             .contentType("application/json")
             .header(new Header(HttpHeaders.AUTHORIZATION, securityTestUtil.authHeader()))
             .body(InvitationTo.builder()
                 .id(invitationId)
+                .project(project)
                 .build())
             .when()
-            .post("/invitation/reject");
+            .post("/invitation/accept");
     }
 }

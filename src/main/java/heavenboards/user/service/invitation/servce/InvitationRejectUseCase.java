@@ -37,6 +37,7 @@ public class InvitationRejectUseCase {
      * @return результат отклонения приглашения
      */
     @Transactional
+    @SuppressWarnings("Duplicates")
     public InvitationOperationResultTo rejectInvitation(final InvitationTo invitation) {
         Optional<InvitationEntity> invitationEntity =
             invitationRepository.findById(invitation.getId());
