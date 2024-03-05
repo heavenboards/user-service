@@ -1,7 +1,9 @@
 package heavenboards.user.service.invitation.controller;
 
+import heavenboards.user.service.invitation.servce.InvitationAcceptUseCase;
 import heavenboards.user.service.invitation.servce.InvitationCreateUseCase;
 import heavenboards.user.service.invitation.servce.InvitationFindUseCase;
+import heavenboards.user.service.invitation.servce.InvitationRejectUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,16 @@ public class InvitationController {
      * Use case поиска приглашений пользователя в проекты.
      */
     private final InvitationFindUseCase invitationFindUseCase;
+
+    /**
+     * Use case подтверждения приглашения пользователя в проект.
+     */
+    private final InvitationAcceptUseCase invitationAcceptUseCase;
+
+    /**
+     * Use case отклонения приглашения пользователя в проект.
+     */
+    private final InvitationRejectUseCase invitationRejectUseCase;
 
     /**
      * Найти все приглашения, которые пришли этому пользователю в проекты.
@@ -67,5 +79,33 @@ public class InvitationController {
         final @Valid @RequestBody InvitationTo invitation
     ) {
         return invitationCreateUseCase.createInvitation(invitation);
+    }
+
+    /**
+     * Запрос на подтверждение приглашения пользователя в проект.
+     *
+     * @param invitation - to-модель приглашения пользователя в проект
+     * @return результат подтверждения приглашения
+     */
+    @PostMapping("/accept")
+    @Operation(summary = "Запрос на подтверждение приглашения пользователя в проект")
+    public InvitationOperationResultTo acceptInvitation(
+        final @Valid @RequestBody InvitationTo invitation
+    ) {
+        return invitationAcceptUseCase.acceptInvitation(invitation);
+    }
+
+    /**
+     * Запрос на отклонение приглашения пользователя в проект.
+     *
+     * @param invitation - to-модель приглашения пользователя в проект
+     * @return результат отклонения приглашения
+     */
+    @PostMapping("/reject")
+    @Operation(summary = "Запрос на отклонение приглашения пользователя в проект")
+    public InvitationOperationResultTo rejectInvitation(
+        final @Valid @RequestBody InvitationTo invitation
+    ) {
+        return invitationRejectUseCase.rejectInvitation(invitation);
     }
 }
