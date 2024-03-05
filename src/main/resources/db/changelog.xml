@@ -5,4 +5,5 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
     <include file="/db/migration/user/run-once/v1_create_user_table.sql"/>
+    <include file="/db/migration/invitation/run-once/v2_create_invitation_entity_table.sql"/>
 </databaseChangeLog>

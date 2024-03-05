@@ -11,6 +11,8 @@ import transfer.contract.domain.authentication.AuthenticationOperationErrorCode;
 import transfer.contract.domain.authentication.AuthenticationOperationResultTo;
 import transfer.contract.domain.authentication.AuthenticationRequestTo;
 import transfer.contract.domain.common.OperationStatus;
+import transfer.contract.exception.BaseErrorCode;
+import transfer.contract.exception.ClientApplicationException;
 
 import java.util.List;
 
@@ -43,17 +45,9 @@ public class AuthenticationUseCase {
      */
     @Transactional(readOnly = true)
     public AuthenticationOperationResultTo authenticate(final AuthenticationRequestTo request) {
-        try {
-            if (!userRepository.existsByUsername(request.getUsername())) {
-                return AuthenticationOperationResultTo.builder()
-                    .status(OperationStatus.FAILED)
-                    .errors(List.of(AuthenticationOperationResultTo.AuthenticationOperationErrorTo
-                        .builder()
-                        .errorCode(AuthenticationOperationErrorCode.USERNAME_NOT_FOUND)
-                        .build()))
-                    .build();
-            }
+        checkUsernameExists(request.getUsername());
 
+        try {
             var authenticationToken = new UsernamePasswordAuthenticationToken(
                 request.getUsername(), request.getPassword()
             );
@@ -64,13 +58,8 @@ public class AuthenticationUseCase {
                     .userId(user.getId())
                     .token(tokenGenerator.generate(user))
                     .build())
-                .orElse(AuthenticationOperationResultTo.builder()
-                    .status(OperationStatus.FAILED)
-                    .errors(List.of(AuthenticationOperationResultTo.AuthenticationOperationErrorTo
-                        .builder()
-                        .errorCode(AuthenticationOperationErrorCode.USERNAME_NOT_FOUND)
-                        .build()))
-                    .build());
+                .orElseThrow(() -> new ClientApplicationException(BaseErrorCode.NOT_FOUND,
+                    String.format("Пользователь с username %s не найден", request.getUsername())));
         } catch (Exception ignored) {
             return AuthenticationOperationResultTo.builder()
                 .status(OperationStatus.FAILED)
@@ -79,6 +68,19 @@ public class AuthenticationUseCase {
                     .errorCode(AuthenticationOperationErrorCode.INVALID_USERNAME_PASSWORD)
                     .build()))
                 .build();
+        }
+    }
+
+    /**
+     * Проверить наличие пользователя по username.
+     *
+     * @param username - username
+     * @throws ClientApplicationException - если username не найден
+     */
+    private void checkUsernameExists(final String username) throws ClientApplicationException {
+        if (!userRepository.existsByUsername(username)) {
+            throw new ClientApplicationException(BaseErrorCode.NOT_FOUND,
+                String.format("Пользователь с username %s не найден", username));
         }
     }
 }

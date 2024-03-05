@@ -95,13 +95,13 @@ public class UserAuthenticationIntegrationTest {
     @Test
     @DisplayName("Тест валидной аутентификации")
     public void validAuthenticationTest() {
-        Mockito.when(userApi.findUserByUsername("username"))
-            .thenReturn(userRepository.findByUsername("username")
+        Mockito.when(userApi.findUserByUsername("registeredUser"))
+            .thenReturn(userRepository.findByUsername("registeredUser")
                 .map(userMapper::mapFromEntity)
                 .orElseThrow(() -> new ClientApplicationException(BaseErrorCode.NOT_FOUND,
                     "Пользователь не найден")));
 
-        String username = "username";
+        String username = "registeredUser";
         Response response = authenticateUserAndGetResponse(username);
 
         AuthenticationOperationResultTo operationResult = response
@@ -120,21 +120,15 @@ public class UserAuthenticationIntegrationTest {
     @Test
     @DisplayName("Тест аутентификации с несуществующим username")
     public void notExistingUsernameAuthenticationTest() {
-        String username = "username1";
+        String username = "notExistingUsername";
         Response response = authenticateUserAndGetResponse(username);
 
-        AuthenticationOperationResultTo operationResult = response
+        ClientApplicationException operationResult = response
             .getBody()
-            .as(AuthenticationOperationResultTo.class);
+            .as(ClientApplicationException.class);
 
-        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-        Assertions.assertEquals(OperationStatus.FAILED, operationResult.getStatus());
-        Assertions.assertEquals(List.of(
-            AuthenticationOperationResultTo.AuthenticationOperationErrorTo
-                .builder()
-                .errorCode(AuthenticationOperationErrorCode.USERNAME_NOT_FOUND)
-                .build()
-        ), operationResult.getErrors());
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatusCode());
+        Assertions.assertEquals(BaseErrorCode.NOT_FOUND, operationResult.getErrorCode());
     }
 
     /**
@@ -143,7 +137,7 @@ public class UserAuthenticationIntegrationTest {
     @Test
     @DisplayName("Тест аутентификации с неправильным паролем")
     public void incorrectPasswordAuthenticationTest() {
-        String username = "username";
+        String username = "registeredUser";
         Response response = authenticateUserAndGetResponse(username);
 
         AuthenticationOperationResultTo operationResult = response

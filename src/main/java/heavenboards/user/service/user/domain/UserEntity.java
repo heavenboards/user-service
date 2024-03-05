@@ -2,10 +2,13 @@ package heavenboards.user.service.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import heavenboards.user.service.invitation.domain.InvitationEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +22,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import transfer.contract.domain.user.UserRole;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
@@ -57,6 +61,20 @@ public final class UserEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private UserRole role = UserRole.USER;
+
+    /**
+     * Приглашения, которые пришли этому пользователю.
+     */
+    @OneToMany(mappedBy = "invitedUser", fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<InvitationEntity> invitations = new ArrayList<>();
+
+    /**
+     * Приглашения, которые отправил этот пользователь.
+     */
+    @OneToMany(mappedBy = "invitationSender", fetch = FetchType.EAGER)
+    @Builder.Default
+    private List<InvitationEntity> sentInvitations = new ArrayList<>();
 
     /**
      * Имя.

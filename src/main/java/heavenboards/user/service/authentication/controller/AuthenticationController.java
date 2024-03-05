@@ -2,6 +2,7 @@ package heavenboards.user.service.authentication.controller;
 
 import heavenboards.user.service.authentication.service.AuthenticationUseCase;
 import heavenboards.user.service.authentication.service.RegistrationUseCase;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -36,6 +37,7 @@ public class AuthenticationController {
      * @return результат операции с токеном
      */
     @PostMapping("/register")
+    @Operation(summary = "Запрос на регистрацию пользователя")
     public AuthenticationOperationResultTo register(
         final @Valid @RequestBody RegistrationRequestTo request
     ) {
@@ -43,12 +45,13 @@ public class AuthenticationController {
     }
 
     /**
-     * Запрос на аутентификацию.
+     * Запрос на аутентификацию пользователя.
      *
      * @param request - данные для аутентификации
      * @return результат операции с токеном
      */
     @PostMapping("/authenticate")
+    @Operation(summary = "Запрос на аутентификацию пользователя")
     public AuthenticationOperationResultTo authenticate(
         final @Valid @RequestBody AuthenticationRequestTo request
     ) {
