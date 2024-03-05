@@ -5,6 +5,7 @@ import heavenboards.user.service.invitation.domain.InvitationRepository;
 import heavenboards.user.service.invitation.mapping.InvitationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
 import transfer.contract.api.ProjectApi;
 import transfer.contract.domain.common.OperationStatus;
@@ -47,6 +48,7 @@ public class InvitationCreateUseCase {
      * @param invitation - to-модель приглашения пользователя в проект
      * @return результат создания приглашения
      */
+    @Transactional
     public InvitationOperationResultTo createInvitation(
         final @RequestBody InvitationTo invitation
     ) {

@@ -5,6 +5,7 @@ import heavenboards.user.service.invitation.mapping.InvitationMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import transfer.contract.domain.invitation.InvitationTo;
 import transfer.contract.domain.user.UserTo;
 
@@ -32,6 +33,7 @@ public class InvitationFindUseCase {
      *
      * @return все найденные приглашения
      */
+    @Transactional(readOnly = true)
     public List<InvitationTo> findAllReceivedInvitations() {
         var user = (UserTo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return invitationRepository.findAllByInvitedUserId(user.getId()).stream()
@@ -44,6 +46,7 @@ public class InvitationFindUseCase {
      *
      * @return все найденные приглашения
      */
+    @Transactional(readOnly = true)
     public List<InvitationTo> findAllSentInvitations() {
         var user = (UserTo) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return invitationRepository.findAllByInvitationSenderId(user.getId()).stream()

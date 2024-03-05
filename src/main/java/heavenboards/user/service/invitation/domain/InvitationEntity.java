@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.UuidGenerator;
 
+import java.util.Objects;
 import java.util.UUID;
 
 /**
@@ -51,4 +52,47 @@ public class InvitationEntity {
      * Идентификатор проекта, в который приглашается пользователь.
      */
     private UUID projectId;
+
+    /**
+     * Сравнение по идентификатору.
+     *
+     * @param another - объект для сравнения
+     * @return равны ли объекты по идентификатору
+     */
+    @Override
+    public boolean equals(final Object another) {
+        if (this == another) {
+            return true;
+        }
+
+        if (another == null || getClass() != another.getClass()) {
+            return false;
+        }
+
+        InvitationEntity entity = (InvitationEntity) another;
+        return Objects.equals(id, entity.id);
+    }
+
+    /**
+     * Хеш код идентификатора.
+     *
+     * @return хеш код идентификатора
+     */
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
+    }
+
+    /**
+     * Строковое представление приглашения.
+     *
+     * @return строковое представление приглашения
+     */
+    @Override
+    public String toString() {
+        return "InvitationEntity{"
+            + "id=" + id
+            + ", projectId=" + projectId
+            + '}';
+    }
 }

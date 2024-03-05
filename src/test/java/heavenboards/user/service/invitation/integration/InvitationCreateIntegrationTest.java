@@ -2,7 +2,6 @@ package heavenboards.user.service.invitation.integration;
 
 import feign.FeignException;
 import heavenboards.user.service.invitation.domain.InvitationEntity;
-import heavenboards.user.service.invitation.domain.InvitationRepository;
 import heavenboards.user.service.user.domain.UserEntity;
 import heavenboards.user.service.user.mapping.UserMapper;
 import io.restassured.RestAssured;
@@ -80,12 +79,6 @@ public class InvitationCreateIntegrationTest extends BaseInvitationIntegrationTe
      */
     @MockBean
     private ProjectApi projectApi;
-
-    /**
-     * Репозиторий для приглашений.
-     */
-    @Autowired
-    private InvitationRepository invitationRepository;
 
     /**
      * Порт приложения.
