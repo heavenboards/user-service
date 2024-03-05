@@ -9,6 +9,11 @@ import transfer.contract.domain.user.UserTo;
 import transfer.contract.exception.BaseErrorCode;
 import transfer.contract.exception.ClientApplicationException;
 
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 /**
  * Use case поиска пользователей.
  */
@@ -37,5 +42,17 @@ public class UserFindUseCase {
             .map(userMapper::mapFromEntity)
             .orElseThrow(() -> new ClientApplicationException(BaseErrorCode.NOT_FOUND,
                 String.format("Пользователь с username %s не найден", username)));
+    }
+
+    /**
+     * Получение списка пользователей по идентификаторам.
+     *
+     * @param ids - идентификаторы пользователей, которых мы ищем
+     * @return to-модели найденных пользователей
+     */
+    public List<UserTo> findUsersByIds(final Set<UUID> ids) {
+        return userRepository.findAllById(ids).stream()
+            .map(userMapper::mapFromEntity)
+            .collect(Collectors.toList());
     }
 }
