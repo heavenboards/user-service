@@ -18,6 +18,7 @@
 
 	<properties>
 		<java.version>21</java.version>
+		<main.class>heavenboards.user.service.UserServiceApplication</main.class>
 	</properties>
 
 	<dependencies>
