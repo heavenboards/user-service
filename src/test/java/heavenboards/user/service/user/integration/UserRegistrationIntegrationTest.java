@@ -18,8 +18,8 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import security.service.jwt.JwtTokenExtractor;
 import transfer.contract.domain.authentication.AuthenticationOperationErrorCode;
 import transfer.contract.domain.authentication.AuthenticationOperationResultTo;
-import transfer.contract.domain.authentication.RegistrationRequestTo;
 import transfer.contract.domain.common.OperationStatus;
+import transfer.contract.domain.user.UserTo;
 
 import java.util.List;
 
@@ -83,21 +83,26 @@ public class UserRegistrationIntegrationTest {
     @DisplayName("Тест занятого username")
     public void usernameAlreadyTakenTest() {
         String username = "username";
-        registerUserAndGetResponse(username);
-        Response response = registerUserAndGetResponse(username);
 
-        AuthenticationOperationResultTo operationResult = response
+        Response successResponse = registerUserAndGetResponse(username);
+        AuthenticationOperationResultTo successResult = successResponse
             .getBody()
             .as(AuthenticationOperationResultTo.class);
 
-        Assertions.assertEquals(HttpStatus.OK.value(), response.getStatusCode());
-        Assertions.assertEquals(OperationStatus.FAILED, operationResult.getStatus());
+        Response failedResponse = registerUserAndGetResponse(username);
+        AuthenticationOperationResultTo failedResult = failedResponse
+            .getBody()
+            .as(AuthenticationOperationResultTo.class);
+
+        Assertions.assertEquals(HttpStatus.OK.value(), failedResponse.getStatusCode());
+        Assertions.assertEquals(OperationStatus.FAILED, failedResult.getStatus());
         Assertions.assertEquals(List.of(
             AuthenticationOperationResultTo.AuthenticationOperationErrorTo
                 .builder()
+                .failedUserId(successResult.getUserId())
                 .errorCode(AuthenticationOperationErrorCode.USERNAME_ALREADY_EXIST)
                 .build()
-        ), operationResult.getErrors());
+        ), failedResult.getErrors());
     }
 
     /**
@@ -107,7 +112,7 @@ public class UserRegistrationIntegrationTest {
      * @return ответ
      */
     private Response registerUserAndGetResponse(String username) {
-        RegistrationRequestTo body = RegistrationRequestTo.builder()
+        UserTo body = UserTo.builder()
             .username(username)
             .password("pAssw0rd123!")
             .firstName("Ivan")

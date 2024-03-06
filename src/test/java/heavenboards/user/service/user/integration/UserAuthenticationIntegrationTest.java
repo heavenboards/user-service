@@ -23,8 +23,8 @@ import security.service.jwt.JwtTokenExtractor;
 import transfer.contract.api.UserApi;
 import transfer.contract.domain.authentication.AuthenticationOperationErrorCode;
 import transfer.contract.domain.authentication.AuthenticationOperationResultTo;
-import transfer.contract.domain.authentication.AuthenticationRequestTo;
 import transfer.contract.domain.common.OperationStatus;
+import transfer.contract.domain.user.UserTo;
 import transfer.contract.exception.BaseErrorCode;
 import transfer.contract.exception.ClientApplicationException;
 
@@ -161,7 +161,7 @@ public class UserAuthenticationIntegrationTest {
      * @return ответ
      */
     private Response authenticateUserAndGetResponse(String username) {
-        AuthenticationRequestTo body = AuthenticationRequestTo.builder()
+        UserTo body = UserTo.builder()
             .username(username)
             .password("pAssw0rd123!")
             .build();

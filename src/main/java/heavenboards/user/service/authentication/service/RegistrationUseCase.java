@@ -9,10 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 import security.service.jwt.JwtTokenGenerator;
 import transfer.contract.domain.authentication.AuthenticationOperationErrorCode;
 import transfer.contract.domain.authentication.AuthenticationOperationResultTo;
-import transfer.contract.domain.authentication.RegistrationRequestTo;
 import transfer.contract.domain.common.OperationStatus;
+import transfer.contract.domain.user.UserTo;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Use case для регистрации пользователей.
@@ -38,26 +39,28 @@ public class RegistrationUseCase {
     /**
      * Зарегистрировать пользователя.
      *
-     * @param request - данные для регистрации
+     * @param user - данные пользователя для регистрации
      * @return результат операции с токеном
      */
     @Transactional
-    public AuthenticationOperationResultTo register(final RegistrationRequestTo request) {
-        if (userRepository.existsByUsername(request.getUsername())) {
+    public AuthenticationOperationResultTo register(final UserTo user) {
+        Optional<UserEntity> existingUser = userRepository.findByUsername(user.getUsername());
+        if (existingUser.isPresent()) {
             return AuthenticationOperationResultTo.builder()
                 .status(OperationStatus.FAILED)
                 .errors(List.of(AuthenticationOperationResultTo.AuthenticationOperationErrorTo
                     .builder()
+                    .failedUserId(existingUser.get().getId())
                     .errorCode(AuthenticationOperationErrorCode.USERNAME_ALREADY_EXIST)
                     .build()))
                 .build();
         }
 
-        UserEntity user = userMapper.mapFromRegistrationRequest(request);
-        userRepository.save(user);
+        UserEntity entity = userMapper.mapForRegistration(user);
+        userRepository.save(entity);
         return AuthenticationOperationResultTo.builder()
-            .userId(user.getId())
-            .token(tokenGenerator.generate(user))
+            .userId(entity.getId())
+            .token(tokenGenerator.generate(entity))
             .build();
     }
 }

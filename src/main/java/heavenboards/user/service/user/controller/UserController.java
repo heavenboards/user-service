@@ -3,6 +3,7 @@ package heavenboards.user.service.user.controller;
 import heavenboards.user.service.user.service.UserFindUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,6 +19,7 @@ import java.util.UUID;
  * Контроллер для взаимодействия с пользователями.
  */
 @RestController
+@CrossOrigin
 @RequestMapping("/api/v1/user")
 @RequiredArgsConstructor
 public class UserController {

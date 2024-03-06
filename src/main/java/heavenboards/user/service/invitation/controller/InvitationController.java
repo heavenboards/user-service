@@ -7,6 +7,7 @@ import heavenboards.user.service.invitation.servce.InvitationRejectUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,6 +22,7 @@ import java.util.List;
  * Контроллер для взаимодействия с приглашениями пользователей в проекты.
  */
 @RestController
+@CrossOrigin
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/invitation")
 public class InvitationController {
