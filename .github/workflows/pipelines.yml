@@ -14,7 +14,6 @@ jobs:
 
       - name: 👉🏼 Инициализируем гит сабмодули
         run: |
-          echo docker username is ${{ vars.CI_REGISTRY_USER }}
           git submodule update --init --remote --recursive
           git submodule foreach 'git checkout ${GITHUB_REF##*/} && git pull || echo "In ${sm_path} branch ${GITHUB_REF##*/} not found"'
 
@@ -97,4 +96,4 @@ jobs:
         run: chmod +x ./mvnw
 
       - name: 👉🏼 Запускаем install + docker build + docker push
-        run: ./mvnw clean install -DskipTests
+        run: ./mvnw -DskipTests -DregistryUsername=${{ vars.CI_REGISTRY_USER }} -DregistryPassword=${{ vars.CI_REGISTRY_PASSWORD }} clean install
