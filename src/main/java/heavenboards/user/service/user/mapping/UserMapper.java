@@ -7,7 +7,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import transfer.contract.domain.authentication.RegistrationRequestTo;
 import transfer.contract.domain.user.UserTo;
 
 /**
@@ -46,10 +45,15 @@ public abstract class UserMapper {
      * @return сущность UserEntity с проставленными полями
      */
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    @Mapping(target = "accountNonExpired", ignore = true)
+    @Mapping(target = "accountNonLocked", ignore = true)
+    @Mapping(target = "credentialsNonExpired", ignore = true)
+    @Mapping(target = "enabled", ignore = true)
     @Mapping(target = "password", expression = "java(getEncoder().encode(to.getPassword()))")
     @Mapping(target = "createdAt", expression = "java(java.time.ZonedDateTime.now())")
     @Mapping(target = "updatedAt", expression = "java(java.time.ZonedDateTime.now())")
-    public abstract UserEntity mapFromRegistrationRequest(RegistrationRequestTo to);
+    public abstract UserEntity mapForRegistration(UserTo to);
 
     /**
      * Внедрение бина для кодирования пароля.

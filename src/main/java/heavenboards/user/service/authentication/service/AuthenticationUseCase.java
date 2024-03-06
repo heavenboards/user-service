@@ -9,8 +9,8 @@ import org.springframework.transaction.annotation.Transactional;
 import security.service.jwt.JwtTokenGenerator;
 import transfer.contract.domain.authentication.AuthenticationOperationErrorCode;
 import transfer.contract.domain.authentication.AuthenticationOperationResultTo;
-import transfer.contract.domain.authentication.AuthenticationRequestTo;
 import transfer.contract.domain.common.OperationStatus;
+import transfer.contract.domain.user.UserTo;
 import transfer.contract.exception.BaseErrorCode;
 import transfer.contract.exception.ClientApplicationException;
 
@@ -40,26 +40,26 @@ public class AuthenticationUseCase {
     /**
      * Аутентифицировать пользователя.
      *
-     * @param request - данные для аутентификации
+     * @param user - данные пользователя для аутентификации
      * @return результат операции с токеном
      */
     @Transactional(readOnly = true)
-    public AuthenticationOperationResultTo authenticate(final AuthenticationRequestTo request) {
-        checkUsernameExists(request.getUsername());
+    public AuthenticationOperationResultTo authenticate(final UserTo user) {
+        checkUsernameExists(user.getUsername());
 
         try {
             var authenticationToken = new UsernamePasswordAuthenticationToken(
-                request.getUsername(), request.getPassword()
+                user.getUsername(), user.getPassword()
             );
 
             authenticationManager.authenticate(authenticationToken);
-            return userRepository.findByUsername(request.getUsername())
-                .map(user -> AuthenticationOperationResultTo.builder()
-                    .userId(user.getId())
-                    .token(tokenGenerator.generate(user))
+            return userRepository.findByUsername(user.getUsername())
+                .map(entity -> AuthenticationOperationResultTo.builder()
+                    .userId(entity.getId())
+                    .token(tokenGenerator.generate(entity))
                     .build())
                 .orElseThrow(() -> new ClientApplicationException(BaseErrorCode.NOT_FOUND,
-                    String.format("Пользователь с username %s не найден", request.getUsername())));
+                    String.format("Пользователь с username %s не найден", user.getUsername())));
         } catch (Exception ignored) {
             return AuthenticationOperationResultTo.builder()
                 .status(OperationStatus.FAILED)
