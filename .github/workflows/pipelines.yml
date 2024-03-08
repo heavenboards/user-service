@@ -75,7 +75,6 @@ jobs:
       - name: 👉🏼 Запускаем тесты
         run: ./mvnw clean package
   dockerize:
-    if: ${{ github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     needs: test
     steps:
@@ -98,3 +97,21 @@ jobs:
 
       - name: 👉🏼 Запускаем install + docker build + docker push
         run: ./mvnw -DskipTests -DregistryUsername=${{ vars.CI_REGISTRY_USER }} -DregistryPassword='${{ vars.CI_REGISTRY_PASSWORD }}' clean install
+  deploy:
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: 👉🏼 Устанавливаем sshpass
+        run: sudo apt update && sudo apt install -y sshpass
+
+      - name: 👉🏼 Подключаемся к удаленному серверу
+        run: sshpass -p ${{ vars.REMOTE_SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ vars.REMOTE_SERVER_HOST }} "
+          echo Connected to the remote server ${{ vars.REMOTE_SERVER_HOST }}!"
+
+      - name: 👉🏼 Перезапускаем контейнер с приложением
+        run: sshpass -p ${{ vars.REMOTE_SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ vars.REMOTE_SERVER_HOST }} "
+          docker stop ${{ vars.CI_REGISTRY_USER }}/${{ github.event.repository.name }}:1.0.0 || true &&
+          docker stop ${{ vars.CI_REGISTRY_USER }}/${{ github.event.repository.name }}:1.0.0 || true &&
+          docker rmi $(docker images -f "dangling=true" -q) &&
+          docker network create -d bridge ${{ vars.DOCKER_NETWORK_NAME }} || true &&
+          docker run -d --name ${{ vars.CI_REGISTRY_USER }}/${{ github.event.repository.name }} --network ${{ vars.DOCKER_NETWORK_NAME }} -p ${{ vars.DOCKER_CONTAINER_PORT }}:${{ vars.DOCKER_CONTAINER_PORT }} ${{ vars.CI_REGISTRY_USER }}/${{ github.event.repository.name }}:1.0.0"
